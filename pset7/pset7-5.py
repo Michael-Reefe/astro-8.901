@@ -26,7 +26,7 @@ def k_func(n, xi_n, phi_n, xi_final, u_final):
     # Numerically integrate xi^4 * phi^n over xi
     integral = spint.simpson(xi_n**4 * phi_n**n, x=xi_n)
     # Return the dimensionless moment of inertia
-    return  integral / (xi_final**4 * np.abs(u_final))
+    return  2/3 * integral / (xi_final**4 * np.abs(u_final))
 
 # Dimensionless gravitational potential energy
 def omega_func(n, xi_n, phi_n, xi_final, u_final):
