@@ -90,10 +90,14 @@ def integrate_density(rho_c, gamma, K, polytrope_model, polytrope_deriv):
     solver = scipy.integrate.RK45(lambda r, rho: drhodr(r, rho, gamma, K, polytrope_model, polytrope_deriv), 
                                   r_step, (rho_step,), np.inf, rtol=1e-10, atol=1e-18)
     while solver.y[0] * rho0 > 1e-5:
-        solver.step()
-        r_out = np.append(r_out, solver.t)
-        rho_out = np.append(rho_out, solver.y[0])
-        # print(solver.status, solver.t, solver.y[0])
+        try:
+            solver.step()
+            r_out = np.append(r_out, solver.t)
+            rho_out = np.append(rho_out, solver.y[0])
+            # print(solver.status, solver.t, solver.y[0] * rho0)
+        except:
+            print("Warning: Solver failed before reaching the end threshold of 10^-5 x rho0")
+            break
 
     # Convert outer radius to kilometers
     R_tot = r_out[-1] * R0 / 1e5
@@ -163,12 +167,13 @@ plt.close()
 
 ################# PART F #########################
 
+# Dont forget to normalize this too!
+rho1 = 4.6e14/rho0
+
 def polytrope_stiff(K, rho, gamma):
-    rho1 = 4.6e14
     return K*rho**gamma if rho < rho1 else K*rho1**gamma + (rho - rho1)*c0**2
 
 def polytrope_stiff_deriv(K, rho, gamma):
-    rho1 = 4.6e14
     return K*gamma*rho**(gamma-1) if rho < rho1 else c0**2
 
 fig, ax = plt.subplots()
